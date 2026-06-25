@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppRegisterRouteImport } from './routes/_app.register'
+import { Route as AppProxyRouteImport } from './routes/_app.proxy'
 import { Route as AppLiveRouteImport } from './routes/_app.live'
 
 const AuthRoute = AuthRouteImport.update({
@@ -34,6 +35,11 @@ const AppRegisterRoute = AppRegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => AppRoute,
 } as any)
+const AppProxyRoute = AppProxyRouteImport.update({
+  id: '/proxy',
+  path: '/proxy',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLiveRoute = AppLiveRouteImport.update({
   id: '/live',
   path: '/live',
@@ -44,11 +50,13 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/auth': typeof AuthRoute
   '/live': typeof AppLiveRoute
+  '/proxy': typeof AppProxyRoute
   '/register': typeof AppRegisterRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/live': typeof AppLiveRoute
+  '/proxy': typeof AppProxyRoute
   '/register': typeof AppRegisterRoute
   '/': typeof AppIndexRoute
 }
@@ -57,19 +65,21 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/_app/live': typeof AppLiveRoute
+  '/_app/proxy': typeof AppProxyRoute
   '/_app/register': typeof AppRegisterRoute
   '/_app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/live' | '/register'
+  fullPaths: '/' | '/auth' | '/live' | '/proxy' | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/live' | '/register' | '/'
+  to: '/auth' | '/live' | '/proxy' | '/register' | '/'
   id:
     | '__root__'
     | '/_app'
     | '/auth'
     | '/_app/live'
+    | '/_app/proxy'
     | '/_app/register'
     | '/_app/'
   fileRoutesById: FileRoutesById
@@ -109,6 +119,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegisterRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/proxy': {
+      id: '/_app/proxy'
+      path: '/proxy'
+      fullPath: '/proxy'
+      preLoaderRoute: typeof AppProxyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/live': {
       id: '/_app/live'
       path: '/live'
@@ -121,12 +138,14 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppLiveRoute: typeof AppLiveRoute
+  AppProxyRoute: typeof AppProxyRoute
   AppRegisterRoute: typeof AppRegisterRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppLiveRoute: AppLiveRoute,
+  AppProxyRoute: AppProxyRoute,
   AppRegisterRoute: AppRegisterRoute,
   AppIndexRoute: AppIndexRoute,
 }
