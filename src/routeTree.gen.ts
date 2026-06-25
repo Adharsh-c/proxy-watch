@@ -18,6 +18,7 @@ import { Route as AppRegisterRouteImport } from './routes/_app.register'
 import { Route as AppProxyRouteImport } from './routes/_app.proxy'
 import { Route as AppPreprocessingRouteImport } from './routes/_app.preprocessing'
 import { Route as AppLiveRouteImport } from './routes/_app.live'
+import { Route as AppDetectionRouteImport } from './routes/_app.detection'
 import { Route as AppDatabaseRouteImport } from './routes/_app.database'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -64,6 +65,11 @@ const AppLiveRoute = AppLiveRouteImport.update({
   path: '/live',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDetectionRoute = AppDetectionRouteImport.update({
+  id: '/detection',
+  path: '/detection',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDatabaseRoute = AppDatabaseRouteImport.update({
   id: '/database',
   path: '/database',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/database': typeof AppDatabaseRoute
+  '/detection': typeof AppDetectionRoute
   '/live': typeof AppLiveRoute
   '/preprocessing': typeof AppPreprocessingRoute
   '/proxy': typeof AppProxyRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/database': typeof AppDatabaseRoute
+  '/detection': typeof AppDetectionRoute
   '/live': typeof AppLiveRoute
   '/preprocessing': typeof AppPreprocessingRoute
   '/proxy': typeof AppProxyRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_app/database': typeof AppDatabaseRoute
+  '/_app/detection': typeof AppDetectionRoute
   '/_app/live': typeof AppLiveRoute
   '/_app/preprocessing': typeof AppPreprocessingRoute
   '/_app/proxy': typeof AppProxyRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/database'
+    | '/detection'
     | '/live'
     | '/preprocessing'
     | '/proxy'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/database'
+    | '/detection'
     | '/live'
     | '/preprocessing'
     | '/proxy'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/_app/database'
+    | '/_app/detection'
     | '/_app/live'
     | '/_app/preprocessing'
     | '/_app/proxy'
@@ -213,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLiveRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/detection': {
+      id: '/_app/detection'
+      path: '/detection'
+      fullPath: '/detection'
+      preLoaderRoute: typeof AppDetectionRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/database': {
       id: '/_app/database'
       path: '/database'
@@ -225,6 +244,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppDatabaseRoute: typeof AppDatabaseRoute
+  AppDetectionRoute: typeof AppDetectionRoute
   AppLiveRoute: typeof AppLiveRoute
   AppPreprocessingRoute: typeof AppPreprocessingRoute
   AppProxyRoute: typeof AppProxyRoute
@@ -235,6 +255,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppDatabaseRoute: AppDatabaseRoute,
+  AppDetectionRoute: AppDetectionRoute,
   AppLiveRoute: AppLiveRoute,
   AppPreprocessingRoute: AppPreprocessingRoute,
   AppProxyRoute: AppProxyRoute,
