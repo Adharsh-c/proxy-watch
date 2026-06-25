@@ -15,8 +15,13 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppRegisterRouteImport } from './routes/_app.register'
+import { Route as AppRecognitionRouteImport } from './routes/_app.recognition'
 import { Route as AppProxyRouteImport } from './routes/_app.proxy'
+import { Route as AppPreprocessingRouteImport } from './routes/_app.preprocessing'
+import { Route as AppLivenessRouteImport } from './routes/_app.liveness'
 import { Route as AppLiveRouteImport } from './routes/_app.live'
+import { Route as AppInsightsRouteImport } from './routes/_app.insights'
+import { Route as AppDetectionRouteImport } from './routes/_app.detection'
 import { Route as AppDatabaseRouteImport } from './routes/_app.database'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -48,14 +53,39 @@ const AppRegisterRoute = AppRegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => AppRoute,
 } as any)
+const AppRecognitionRoute = AppRecognitionRouteImport.update({
+  id: '/recognition',
+  path: '/recognition',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProxyRoute = AppProxyRouteImport.update({
   id: '/proxy',
   path: '/proxy',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPreprocessingRoute = AppPreprocessingRouteImport.update({
+  id: '/preprocessing',
+  path: '/preprocessing',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLivenessRoute = AppLivenessRouteImport.update({
+  id: '/liveness',
+  path: '/liveness',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLiveRoute = AppLiveRouteImport.update({
   id: '/live',
   path: '/live',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInsightsRoute = AppInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDetectionRoute = AppDetectionRouteImport.update({
+  id: '/detection',
+  path: '/detection',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDatabaseRoute = AppDatabaseRouteImport.update({
@@ -69,8 +99,13 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/database': typeof AppDatabaseRoute
+  '/detection': typeof AppDetectionRoute
+  '/insights': typeof AppInsightsRoute
   '/live': typeof AppLiveRoute
+  '/liveness': typeof AppLivenessRoute
+  '/preprocessing': typeof AppPreprocessingRoute
   '/proxy': typeof AppProxyRoute
+  '/recognition': typeof AppRecognitionRoute
   '/register': typeof AppRegisterRoute
   '/reports': typeof AppReportsRoute
 }
@@ -78,8 +113,13 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/database': typeof AppDatabaseRoute
+  '/detection': typeof AppDetectionRoute
+  '/insights': typeof AppInsightsRoute
   '/live': typeof AppLiveRoute
+  '/liveness': typeof AppLivenessRoute
+  '/preprocessing': typeof AppPreprocessingRoute
   '/proxy': typeof AppProxyRoute
+  '/recognition': typeof AppRecognitionRoute
   '/register': typeof AppRegisterRoute
   '/reports': typeof AppReportsRoute
   '/': typeof AppIndexRoute
@@ -90,8 +130,13 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_app/database': typeof AppDatabaseRoute
+  '/_app/detection': typeof AppDetectionRoute
+  '/_app/insights': typeof AppInsightsRoute
   '/_app/live': typeof AppLiveRoute
+  '/_app/liveness': typeof AppLivenessRoute
+  '/_app/preprocessing': typeof AppPreprocessingRoute
   '/_app/proxy': typeof AppProxyRoute
+  '/_app/recognition': typeof AppRecognitionRoute
   '/_app/register': typeof AppRegisterRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/': typeof AppIndexRoute
@@ -103,8 +148,13 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/database'
+    | '/detection'
+    | '/insights'
     | '/live'
+    | '/liveness'
+    | '/preprocessing'
     | '/proxy'
+    | '/recognition'
     | '/register'
     | '/reports'
   fileRoutesByTo: FileRoutesByTo
@@ -112,8 +162,13 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/database'
+    | '/detection'
+    | '/insights'
     | '/live'
+    | '/liveness'
+    | '/preprocessing'
     | '/proxy'
+    | '/recognition'
     | '/register'
     | '/reports'
     | '/'
@@ -123,8 +178,13 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/_app/database'
+    | '/_app/detection'
+    | '/_app/insights'
     | '/_app/live'
+    | '/_app/liveness'
+    | '/_app/preprocessing'
     | '/_app/proxy'
+    | '/_app/recognition'
     | '/_app/register'
     | '/_app/reports'
     | '/_app/'
@@ -180,6 +240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegisterRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/recognition': {
+      id: '/_app/recognition'
+      path: '/recognition'
+      fullPath: '/recognition'
+      preLoaderRoute: typeof AppRecognitionRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/proxy': {
       id: '/_app/proxy'
       path: '/proxy'
@@ -187,11 +254,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProxyRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/preprocessing': {
+      id: '/_app/preprocessing'
+      path: '/preprocessing'
+      fullPath: '/preprocessing'
+      preLoaderRoute: typeof AppPreprocessingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/liveness': {
+      id: '/_app/liveness'
+      path: '/liveness'
+      fullPath: '/liveness'
+      preLoaderRoute: typeof AppLivenessRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/live': {
       id: '/_app/live'
       path: '/live'
       fullPath: '/live'
       preLoaderRoute: typeof AppLiveRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/insights': {
+      id: '/_app/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof AppInsightsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/detection': {
+      id: '/_app/detection'
+      path: '/detection'
+      fullPath: '/detection'
+      preLoaderRoute: typeof AppDetectionRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/database': {
@@ -206,8 +301,13 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppDatabaseRoute: typeof AppDatabaseRoute
+  AppDetectionRoute: typeof AppDetectionRoute
+  AppInsightsRoute: typeof AppInsightsRoute
   AppLiveRoute: typeof AppLiveRoute
+  AppLivenessRoute: typeof AppLivenessRoute
+  AppPreprocessingRoute: typeof AppPreprocessingRoute
   AppProxyRoute: typeof AppProxyRoute
+  AppRecognitionRoute: typeof AppRecognitionRoute
   AppRegisterRoute: typeof AppRegisterRoute
   AppReportsRoute: typeof AppReportsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -215,8 +315,13 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppDatabaseRoute: AppDatabaseRoute,
+  AppDetectionRoute: AppDetectionRoute,
+  AppInsightsRoute: AppInsightsRoute,
   AppLiveRoute: AppLiveRoute,
+  AppLivenessRoute: AppLivenessRoute,
+  AppPreprocessingRoute: AppPreprocessingRoute,
   AppProxyRoute: AppProxyRoute,
+  AppRecognitionRoute: AppRecognitionRoute,
   AppRegisterRoute: AppRegisterRoute,
   AppReportsRoute: AppReportsRoute,
   AppIndexRoute: AppIndexRoute,
