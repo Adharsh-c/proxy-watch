@@ -18,6 +18,7 @@ import { Route as AppRegisterRouteImport } from './routes/_app.register'
 import { Route as AppRecognitionRouteImport } from './routes/_app.recognition'
 import { Route as AppProxyRouteImport } from './routes/_app.proxy'
 import { Route as AppPreprocessingRouteImport } from './routes/_app.preprocessing'
+import { Route as AppLivenessRouteImport } from './routes/_app.liveness'
 import { Route as AppLiveRouteImport } from './routes/_app.live'
 import { Route as AppDetectionRouteImport } from './routes/_app.detection'
 import { Route as AppDatabaseRouteImport } from './routes/_app.database'
@@ -66,6 +67,11 @@ const AppPreprocessingRoute = AppPreprocessingRouteImport.update({
   path: '/preprocessing',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLivenessRoute = AppLivenessRouteImport.update({
+  id: '/liveness',
+  path: '/liveness',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLiveRoute = AppLiveRouteImport.update({
   id: '/live',
   path: '/live',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/database': typeof AppDatabaseRoute
   '/detection': typeof AppDetectionRoute
   '/live': typeof AppLiveRoute
+  '/liveness': typeof AppLivenessRoute
   '/preprocessing': typeof AppPreprocessingRoute
   '/proxy': typeof AppProxyRoute
   '/recognition': typeof AppRecognitionRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/database': typeof AppDatabaseRoute
   '/detection': typeof AppDetectionRoute
   '/live': typeof AppLiveRoute
+  '/liveness': typeof AppLivenessRoute
   '/preprocessing': typeof AppPreprocessingRoute
   '/proxy': typeof AppProxyRoute
   '/recognition': typeof AppRecognitionRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/_app/database': typeof AppDatabaseRoute
   '/_app/detection': typeof AppDetectionRoute
   '/_app/live': typeof AppLiveRoute
+  '/_app/liveness': typeof AppLivenessRoute
   '/_app/preprocessing': typeof AppPreprocessingRoute
   '/_app/proxy': typeof AppProxyRoute
   '/_app/recognition': typeof AppRecognitionRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/database'
     | '/detection'
     | '/live'
+    | '/liveness'
     | '/preprocessing'
     | '/proxy'
     | '/recognition'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/database'
     | '/detection'
     | '/live'
+    | '/liveness'
     | '/preprocessing'
     | '/proxy'
     | '/recognition'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/_app/database'
     | '/_app/detection'
     | '/_app/live'
+    | '/_app/liveness'
     | '/_app/preprocessing'
     | '/_app/proxy'
     | '/_app/recognition'
@@ -237,6 +249,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPreprocessingRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/liveness': {
+      id: '/_app/liveness'
+      path: '/liveness'
+      fullPath: '/liveness'
+      preLoaderRoute: typeof AppLivenessRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/live': {
       id: '/_app/live'
       path: '/live'
@@ -265,6 +284,7 @@ interface AppRouteChildren {
   AppDatabaseRoute: typeof AppDatabaseRoute
   AppDetectionRoute: typeof AppDetectionRoute
   AppLiveRoute: typeof AppLiveRoute
+  AppLivenessRoute: typeof AppLivenessRoute
   AppPreprocessingRoute: typeof AppPreprocessingRoute
   AppProxyRoute: typeof AppProxyRoute
   AppRecognitionRoute: typeof AppRecognitionRoute
@@ -277,6 +297,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDatabaseRoute: AppDatabaseRoute,
   AppDetectionRoute: AppDetectionRoute,
   AppLiveRoute: AppLiveRoute,
+  AppLivenessRoute: AppLivenessRoute,
   AppPreprocessingRoute: AppPreprocessingRoute,
   AppProxyRoute: AppProxyRoute,
   AppRecognitionRoute: AppRecognitionRoute,
