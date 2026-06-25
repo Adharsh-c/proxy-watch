@@ -15,6 +15,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppRegisterRouteImport } from './routes/_app.register'
+import { Route as AppRecognitionRouteImport } from './routes/_app.recognition'
 import { Route as AppProxyRouteImport } from './routes/_app.proxy'
 import { Route as AppPreprocessingRouteImport } from './routes/_app.preprocessing'
 import { Route as AppLiveRouteImport } from './routes/_app.live'
@@ -48,6 +49,11 @@ const AppReportsRoute = AppReportsRouteImport.update({
 const AppRegisterRoute = AppRegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRecognitionRoute = AppRecognitionRouteImport.update({
+  id: '/recognition',
+  path: '/recognition',
   getParentRoute: () => AppRoute,
 } as any)
 const AppProxyRoute = AppProxyRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/live': typeof AppLiveRoute
   '/preprocessing': typeof AppPreprocessingRoute
   '/proxy': typeof AppProxyRoute
+  '/recognition': typeof AppRecognitionRoute
   '/register': typeof AppRegisterRoute
   '/reports': typeof AppReportsRoute
 }
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/live': typeof AppLiveRoute
   '/preprocessing': typeof AppPreprocessingRoute
   '/proxy': typeof AppProxyRoute
+  '/recognition': typeof AppRecognitionRoute
   '/register': typeof AppRegisterRoute
   '/reports': typeof AppReportsRoute
   '/': typeof AppIndexRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/_app/live': typeof AppLiveRoute
   '/_app/preprocessing': typeof AppPreprocessingRoute
   '/_app/proxy': typeof AppProxyRoute
+  '/_app/recognition': typeof AppRecognitionRoute
   '/_app/register': typeof AppRegisterRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/': typeof AppIndexRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/live'
     | '/preprocessing'
     | '/proxy'
+    | '/recognition'
     | '/register'
     | '/reports'
   fileRoutesByTo: FileRoutesByTo
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/live'
     | '/preprocessing'
     | '/proxy'
+    | '/recognition'
     | '/register'
     | '/reports'
     | '/'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/_app/live'
     | '/_app/preprocessing'
     | '/_app/proxy'
+    | '/_app/recognition'
     | '/_app/register'
     | '/_app/reports'
     | '/_app/'
@@ -204,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegisterRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/recognition': {
+      id: '/_app/recognition'
+      path: '/recognition'
+      fullPath: '/recognition'
+      preLoaderRoute: typeof AppRecognitionRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/proxy': {
       id: '/_app/proxy'
       path: '/proxy'
@@ -248,6 +267,7 @@ interface AppRouteChildren {
   AppLiveRoute: typeof AppLiveRoute
   AppPreprocessingRoute: typeof AppPreprocessingRoute
   AppProxyRoute: typeof AppProxyRoute
+  AppRecognitionRoute: typeof AppRecognitionRoute
   AppRegisterRoute: typeof AppRegisterRoute
   AppReportsRoute: typeof AppReportsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -259,6 +279,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppLiveRoute: AppLiveRoute,
   AppPreprocessingRoute: AppPreprocessingRoute,
   AppProxyRoute: AppProxyRoute,
+  AppRecognitionRoute: AppRecognitionRoute,
   AppRegisterRoute: AppRegisterRoute,
   AppReportsRoute: AppReportsRoute,
   AppIndexRoute: AppIndexRoute,
