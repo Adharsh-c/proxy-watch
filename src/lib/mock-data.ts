@@ -52,18 +52,21 @@ export interface DetectedFace {
   live: boolean;
 }
 
-// Boxes expressed as percentages of the 1280x720 canvas for responsive overlay.
+// Boxes expressed as percentages of the 1280x720 canvas for responsive overlay,
+// roughly aligned to faces in the simulated classroom feed (two rows).
 export const DETECTED_FACES: DetectedFace[] = [
-  { faceId: "F-01", name: "Ravi Teja", confidence: 0.99, box: { x: 6, y: 28, w: 13, h: 24 }, coords: "(78,201)–(244,374)", live: true },
-  { faceId: "F-02", name: "Sneha Reddy", confidence: 0.97, box: { x: 22, y: 22, w: 12, h: 22 }, coords: "(281,158)–(435,316)", live: true },
-  { faceId: "F-03", name: "Arjun Nair", confidence: 0.94, box: { x: 37, y: 30, w: 12, h: 23 }, coords: "(473,216)–(627,382)", live: true },
-  { faceId: "F-04", name: "Priya Menon", confidence: 0.96, box: { x: 52, y: 20, w: 12, h: 22 }, coords: "(665,144)–(819,302)", live: true },
-  { faceId: "F-05", name: "Karthik Iyer", confidence: 0.91, box: { x: 67, y: 31, w: 12, h: 23 }, coords: "(857,223)–(1011,389)", live: true },
-  { faceId: "F-06", name: "Divya Pillai", confidence: 0.98, box: { x: 81, y: 24, w: 12, h: 22 }, coords: "(1037,173)–(1191,331)", live: true },
-  { faceId: "F-07", name: "Mohan Das", confidence: 0.62, box: { x: 14, y: 56, w: 11, h: 20 }, coords: "(179,403)–(320,547)", live: false },
-  { faceId: "F-08", name: "Lakshmi Rao", confidence: 0.93, box: { x: 30, y: 58, w: 11, h: 20 }, coords: "(384,418)–(525,562)", live: true },
-  { faceId: "F-09", name: "Vikram Singh", confidence: 0.89, box: { x: 47, y: 55, w: 11, h: 20 }, coords: "(602,396)–(743,540)", live: true },
-  { faceId: "F-10", name: "Anjali Verma", confidence: 0.95, box: { x: 63, y: 57, w: 11, h: 20 }, coords: "(806,410)–(947,554)", live: true },
+  // Front row (larger faces)
+  { faceId: "F-01", name: "Sneha Reddy", confidence: 0.99, box: { x: 4, y: 40, w: 11, h: 19 }, coords: "(51,288)–(192,425)", live: true },
+  { faceId: "F-02", name: "Ravi Teja", confidence: 0.98, box: { x: 25, y: 38, w: 11, h: 20 }, coords: "(320,274)–(461,418)", live: true },
+  { faceId: "F-03", name: "Priya Menon", confidence: 0.97, box: { x: 55, y: 43, w: 10, h: 19 }, coords: "(704,310)–(832,447)", live: true },
+  { faceId: "F-04", name: "Anjali Verma", confidence: 0.95, box: { x: 70, y: 40, w: 11, h: 20 }, coords: "(896,288)–(1037,432)", live: true },
+  // Back row (smaller faces)
+  { faceId: "F-05", name: "Karthik Iyer", confidence: 0.92, box: { x: 15, y: 36, w: 7, h: 13 }, coords: "(192,259)–(282,353)", live: true },
+  { faceId: "F-06", name: "Divya Pillai", confidence: 0.9, box: { x: 23, y: 37, w: 6, h: 12 }, coords: "(294,266)–(371,353)", live: true },
+  { faceId: "F-07", name: "Mohan Das", confidence: 0.58, box: { x: 31, y: 36, w: 6, h: 12 }, coords: "(397,259)–(474,346)", live: false },
+  { faceId: "F-08", name: "Lakshmi Rao", confidence: 0.93, box: { x: 40, y: 36, w: 6, h: 12 }, coords: "(512,259)–(589,346)", live: true },
+  { faceId: "F-09", name: "Vikram Singh", confidence: 0.89, box: { x: 49, y: 35, w: 6, h: 12 }, coords: "(627,252)–(704,339)", live: true },
+  { faceId: "F-10", name: "Arjun Nair", confidence: 0.94, box: { x: 63, y: 36, w: 6, h: 12 }, coords: "(806,259)–(883,346)", live: true },
 ];
 
 export interface LivenessFactor {
