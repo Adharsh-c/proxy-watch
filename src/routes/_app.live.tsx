@@ -34,6 +34,7 @@ function LivePage() {
   const [log, setLog] = useState<LogEntry[]>([]);
   const revealRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fpsRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const idxRef = useRef(0);
 
   useEffect(
     () => () => {
@@ -47,35 +48,39 @@ function LivePage() {
     setRunning(true);
     setRevealed(0);
     setLog([]);
+    idxRef.current = 0;
     toast.info("Camera started", { description: "Detecting faces at 1280×720 · 24.8 FPS" });
 
     fpsRef.current = setInterval(() => setFps(24 + Math.random()), 800);
 
     revealRef.current = setInterval(() => {
-      setRevealed((r) => {
-        const next = r + 1;
-        const face = DETECTED_FACES[r];
-        if (face) {
-          const similarity = Math.min(0.75, Math.max(0.6, face.confidence - Math.random() * 0.12));
-          const matched = face.live && face.confidence >= THRESHOLD;
-          setLog((prev) => [
-            {
-              id: face.faceId,
-              name: face.name,
-              similarity: Number(similarity.toFixed(2)),
-              status: matched ? "present" : "review",
-              time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-            },
-            ...prev,
-          ]);
-          if (matched) toast.success(`${face.name} — Marked Present`, { description: `Cosine similarity ${similarity.toFixed(2)}` });
-        }
-        if (next >= DETECTED_FACES.length) {
-          if (revealRef.current) clearInterval(revealRef.current);
-          return DETECTED_FACES.length;
-        }
-        return next;
-      });
+      const i = idxRef.current;
+      const face = DETECTED_FACES[i];
+      if (!face) {
+        if (revealRef.current) clearInterval(revealRef.current);
+        return;
+      }
+      idxRef.current = i + 1;
+      setRevealed(i + 1);
+
+      const similarity = Math.min(0.75, Math.max(0.6, face.confidence - Math.random() * 0.12));
+      const matched = face.live && face.confidence >= THRESHOLD;
+      setLog((prev) => [
+        {
+          id: face.faceId,
+          name: face.name,
+          similarity: Number(similarity.toFixed(2)),
+          status: matched ? "present" : "review",
+          time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+        },
+        ...prev,
+      ]);
+      if (matched)
+        toast.success(`${face.name} — Marked Present`, {
+          description: `Cosine similarity ${similarity.toFixed(2)}`,
+        });
+
+      if (i + 1 >= DETECTED_FACES.length && revealRef.current) clearInterval(revealRef.current);
     }, 700);
   };
 
