@@ -20,6 +20,7 @@ import { Route as AppProxyRouteImport } from './routes/_app.proxy'
 import { Route as AppPreprocessingRouteImport } from './routes/_app.preprocessing'
 import { Route as AppLivenessRouteImport } from './routes/_app.liveness'
 import { Route as AppLiveRouteImport } from './routes/_app.live'
+import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppDetectionRouteImport } from './routes/_app.detection'
 import { Route as AppDatabaseRouteImport } from './routes/_app.database'
 
@@ -77,6 +78,11 @@ const AppLiveRoute = AppLiveRouteImport.update({
   path: '/live',
   getParentRoute: () => AppRoute,
 } as any)
+const AppInsightsRoute = AppInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDetectionRoute = AppDetectionRouteImport.update({
   id: '/detection',
   path: '/detection',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/database': typeof AppDatabaseRoute
   '/detection': typeof AppDetectionRoute
+  '/insights': typeof AppInsightsRoute
   '/live': typeof AppLiveRoute
   '/liveness': typeof AppLivenessRoute
   '/preprocessing': typeof AppPreprocessingRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/database': typeof AppDatabaseRoute
   '/detection': typeof AppDetectionRoute
+  '/insights': typeof AppInsightsRoute
   '/live': typeof AppLiveRoute
   '/liveness': typeof AppLivenessRoute
   '/preprocessing': typeof AppPreprocessingRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_app/database': typeof AppDatabaseRoute
   '/_app/detection': typeof AppDetectionRoute
+  '/_app/insights': typeof AppInsightsRoute
   '/_app/live': typeof AppLiveRoute
   '/_app/liveness': typeof AppLivenessRoute
   '/_app/preprocessing': typeof AppPreprocessingRoute
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/database'
     | '/detection'
+    | '/insights'
     | '/live'
     | '/liveness'
     | '/preprocessing'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/database'
     | '/detection'
+    | '/insights'
     | '/live'
     | '/liveness'
     | '/preprocessing'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_app/database'
     | '/_app/detection'
+    | '/_app/insights'
     | '/_app/live'
     | '/_app/liveness'
     | '/_app/preprocessing'
@@ -263,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLiveRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/insights': {
+      id: '/_app/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof AppInsightsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/detection': {
       id: '/_app/detection'
       path: '/detection'
@@ -283,6 +302,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppDatabaseRoute: typeof AppDatabaseRoute
   AppDetectionRoute: typeof AppDetectionRoute
+  AppInsightsRoute: typeof AppInsightsRoute
   AppLiveRoute: typeof AppLiveRoute
   AppLivenessRoute: typeof AppLivenessRoute
   AppPreprocessingRoute: typeof AppPreprocessingRoute
@@ -296,6 +316,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppDatabaseRoute: AppDatabaseRoute,
   AppDetectionRoute: AppDetectionRoute,
+  AppInsightsRoute: AppInsightsRoute,
   AppLiveRoute: AppLiveRoute,
   AppLivenessRoute: AppLivenessRoute,
   AppPreprocessingRoute: AppPreprocessingRoute,
