@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { BarChart3, FileText, FileSpreadsheet, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,7 +16,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { STUDENTS, SUBJECTS, SECTIONS, DEFAULTER_THRESHOLD } from "@/lib/mock-data";
+import { SUBJECTS, SECTIONS, DEFAULTER_THRESHOLD } from "@/lib/mock-data";
+import { useDashboardState } from "@/lib/dashboard-state";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/reports")({
@@ -24,8 +26,104 @@ export const Route = createFileRoute("/_app/reports")({
 });
 
 function ReportsPage() {
+  const { students } = useDashboardState();
+  const [subject, setSubject] = useState(SUBJECTS[0]);
+  const [section, setSection] = useState(SECTIONS[0]);
+  const [nameFilter, setNameFilter] = useState("");
+
+  const filteredStudents = students.filter((s) => {
+    return (
+      s.subject === subject &&
+      s.section === section &&
+      s.name.toLowerCase().includes(nameFilter.toLowerCase())
+    );
+  });
+
+  const createCsv = () => {
+    const headers = [
+      "Register No",
+      "Name",
+      "Department",
+      "Year",
+      "Section",
+      "Subject",
+      "Attendance",
+      "Status",
+      "Email",
+      "Phone",
+      "DOB",
+    ];
+
+    const rows = filteredStudents.map((s) => [
+      s.registerNo,
+      s.name,
+      s.department,
+      s.year,
+      s.section,
+      s.subject,
+      `${s.attendance}%`,
+      s.status,
+      s.email,
+      s.phone ?? "",
+      s.dob ?? "",
+    ]);
+
+    const escapeValue = (value: string) => `"${value.replace(/"/g, '""')}"`;
+    return [headers, ...rows]
+      .map((row) => row.map((value) => escapeValue(String(value))).join(","))
+      .join("\r\n");
+  };
+
+  const downloadFile = (filename: string, content: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
   const exportAs = (fmt: string) => {
-    toast.success(`Exporting ${fmt}`, { description: "Report generated with current filters applied." });
+    if (!filteredStudents.length) {
+      toast.error("No records to export", {
+        description: "Adjust filters to include at least one student.",
+      });
+      return;
+    }
+
+    const fileBase = `report_${subject}_${section}_${nameFilter || "all"}`
+      .replace(/\s+/g, "_")
+      .toLowerCase();
+
+    if (fmt === "PDF") {
+      const printable = `Report for ${subject} · Section ${section}\n` +
+        `Filtered by: ${nameFilter ? `Name contains \"${nameFilter}\"` : "All names"}\n\n` +
+        `Register No,Name,Department,Year,Section,Subject,Attendance,Status,Email,Phone,DOB\n` +
+        filteredStudents.map((s) => [
+          s.registerNo,
+          s.name,
+          s.department,
+          s.year,
+          s.section,
+          s.subject,
+          `${s.attendance}%`,
+          s.status,
+          s.email,
+          s.phone ?? "",
+          s.dob ?? "",
+        ].join(",")).join("\n");
+      downloadFile(`${fileBase}.pdf`, printable, "application/pdf");
+    } else {
+      const csv = createCsv();
+      downloadFile(`${fileBase}.csv`, csv, "text/csv;charset=utf-8;");
+    }
+
+    toast.success(`Exporting ${fmt}`, {
+      description: `Exported ${filteredStudents.length} records from current filters.`,
+    });
   };
 
   return (
@@ -44,29 +142,47 @@ function ReportsPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1.5">
               <Label>Subject</Label>
-              <Select defaultValue={SUBJECTS[0]}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select value={subject} onValueChange={setSubject}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {SUBJECTS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {SUBJECTS.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
               <Label>Section</Label>
-              <Select defaultValue={SECTIONS[0]}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select value={section} onValueChange={setSection}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {SECTIONS.map((s) => <SelectItem key={s} value={s}>Section {s}</SelectItem>)}
+                  {SECTIONS.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      Section {s}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>From Date</Label>
-              <Input type="date" />
+              <Label>Search Name</Label>
+              <Input
+                placeholder="Search by student name"
+                value={nameFilter}
+                onChange={(event) => setNameFilter(event.currentTarget.value)}
+              />
             </div>
             <div className="space-y-1.5">
-              <Label>To Date</Label>
-              <Input type="date" />
+              <Label>Showing</Label>
+              <div className="rounded-lg border border-border bg-muted px-3 py-2 text-sm text-muted-foreground">
+                {filteredStudents.length} records
+              </div>
             </div>
           </div>
 
@@ -103,7 +219,7 @@ function ReportsPage() {
                 </tr>
               </thead>
               <tbody>
-                {STUDENTS.map((s) => {
+                {filteredStudents.map((s) => {
                   const low = s.attendance < DEFAULTER_THRESHOLD;
                   return (
                     <tr key={s.id} className="border-b border-border/60 last:border-0">
@@ -112,7 +228,12 @@ function ReportsPage() {
                       <td className="px-3 py-3 text-muted-foreground">{s.department}</td>
                       <td className="px-3 py-3 text-muted-foreground">{s.year}</td>
                       <td className="px-3 py-3 text-muted-foreground">{s.section}</td>
-                      <td className={cn("px-3 py-3 text-right font-semibold", low ? "text-danger" : "text-success")}>
+                      <td
+                        className={cn(
+                          "px-3 py-3 text-right font-semibold",
+                          low ? "text-danger" : "text-success",
+                        )}
+                      >
                         {s.attendance}%
                       </td>
                       <td className="px-3 py-3 text-right">

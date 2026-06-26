@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useDashboardState } from "@/lib/dashboard-state";
 import { ShieldAlert, Eye, Layers, Box, Move, Ban, MapPin, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 
@@ -8,7 +8,7 @@ import { StatusPill } from "@/components/status-pill";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { LIVENESS_FACTORS, SPOOF_SAMPLES, PROXY_ALERTS, type ProxyAlert } from "@/lib/mock-data";
+import { LIVENESS_FACTORS, SPOOF_SAMPLES, type ProxyAlert } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/proxy")({
@@ -24,10 +24,10 @@ const FACTOR_ICONS: Record<string, typeof Eye> = {
 };
 
 function ProxyPage() {
-  const [alerts, setAlerts] = useState<ProxyAlert[]>(PROXY_ALERTS);
+  const { proxyAlerts, resolveProxyAlert } = useDashboardState();
 
   const resolve = (a: ProxyAlert) => {
-    setAlerts((prev) => prev.map((x) => (x.id === a.id ? { ...x, status: "resolved" } : x)));
+    resolveProxyAlert(a.id);
     toast.error(`${a.id} · Proxy rejected`, {
       description: `${a.student} flagged for cross-room collision. Attendance reverted & faculty notified.`,
     });
@@ -39,7 +39,7 @@ function ProxyPage() {
     });
   };
 
-  const activeCount = alerts.filter((a) => a.status === "active").length;
+  const activeCount = proxyAlerts.filter((a) => a.status === "active").length;
 
   return (
     <div>
@@ -72,7 +72,12 @@ function ProxyPage() {
                       <Icon className="h-4 w-4 text-muted-foreground" />
                       {f.label}
                     </span>
-                    <span className={cn("font-semibold", tone === "success" ? "text-success" : "text-warning-foreground")}>
+                    <span
+                      className={cn(
+                        "font-semibold",
+                        tone === "success" ? "text-success" : "text-warning-foreground",
+                      )}
+                    >
                       {f.score.toFixed(2)}
                     </span>
                   </div>
@@ -81,8 +86,8 @@ function ProxyPage() {
               );
             })}
             <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-              Living / Spoof factor scores range 0.50–0.70. Scores below 0.60 trigger a
-              manual liveness review.
+              Living / Spoof factor scores range 0.50–0.70. Scores below 0.60 trigger a manual
+              liveness review.
             </div>
           </CardContent>
         </Card>
@@ -97,13 +102,7 @@ function ProxyPage() {
               {SPOOF_SAMPLES.map((s) => (
                 <div key={s.id} className="overflow-hidden rounded-xl border border-danger/30">
                   <div className="relative aspect-video bg-slate-900">
-                    <div
-                      className="absolute inset-0 opacity-60"
-                      style={{
-                        background:
-                          "repeating-linear-gradient(45deg, oklch(0.3 0.04 265) 0 8px, oklch(0.22 0.03 265) 8px 16px)",
-                      }}
-                    />
+                    <div className="absolute inset-0 opacity-60 spoof-gradient-bg" />
                     <div className="absolute inset-3 rounded-md border-2 border-danger" />
                     <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded bg-danger px-2 py-1 text-[11px] font-bold text-danger-foreground">
                       <ScanLine className="h-3 w-3" /> {s.type} ✕
@@ -139,12 +138,14 @@ function ProxyPage() {
           </p>
         </CardHeader>
         <CardContent className="space-y-3">
-          {alerts.map((a) => (
+          {proxyAlerts.map((a) => (
             <div
               key={a.id}
               className={cn(
                 "flex flex-wrap items-center gap-4 rounded-xl border p-4",
-                a.status === "active" ? "border-danger/30 bg-danger/5" : "border-border bg-muted/30",
+                a.status === "active"
+                  ? "border-danger/30 bg-danger/5"
+                  : "border-border bg-muted/30",
               )}
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/12 text-danger">

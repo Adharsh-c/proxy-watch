@@ -26,25 +26,17 @@ import { StatusPill } from "@/components/status-pill";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  KPIS,
-  STUDENTS,
   SUBJECT_DISTRIBUTION,
   MONTHLY_TREND,
   DEFAULTER_THRESHOLD,
 } from "@/lib/mock-data";
+import { useDashboardState } from "@/lib/dashboard-state";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/")({
   head: () => ({ meta: [{ title: "Dashboard — SentinelFace" }] }),
   component: Dashboard,
 });
-
-const KPI_CARDS = [
-  { label: "Total Students", value: KPIS.totalStudents, icon: Users, tone: "primary", delta: "+4.2%", up: true },
-  { label: "Present Today", value: KPIS.presentToday, icon: UserCheck, tone: "success", delta: "+2.1%", up: true },
-  { label: "Absent Today", value: KPIS.absentToday, icon: UserX, tone: "danger", delta: "-1.4%", up: false },
-  { label: "Overall Attendance", value: `${KPIS.overallAttendance}%`, icon: TrendingUp, tone: "info", delta: "+0.8%", up: true },
-] as const;
 
 const toneBg: Record<string, string> = {
   primary: "bg-primary/10 text-primary",
@@ -54,16 +46,61 @@ const toneBg: Record<string, string> = {
 };
 
 function Dashboard() {
-  const defaulters = STUDENTS.filter((s) => s.attendance < DEFAULTER_THRESHOLD).sort(
-    (a, b) => a.attendance - b.attendance,
+  const { department, subject, students } = useDashboardState();
+
+  const filteredStudents = students.filter(
+    (s) => s.department === department && s.subject === subject,
   );
+  const presentCount = filteredStudents.filter((s) => s.attendance >= DEFAULTER_THRESHOLD).length;
+  const absentCount = filteredStudents.length - presentCount;
+  const overallAttendance = filteredStudents.length
+    ? (filteredStudents.reduce((sum, s) => sum + s.attendance, 0) / filteredStudents.length).toFixed(1)
+    : "0.0";
+  const defaulters = filteredStudents
+    .filter((s) => s.attendance < DEFAULTER_THRESHOLD)
+    .sort((a, b) => a.attendance - b.attendance);
+
+  const KPI_CARDS = [
+    {
+      label: "Total Students",
+      value: filteredStudents.length,
+      icon: Users,
+      tone: "primary",
+      delta: "+4.2%",
+      up: true,
+    },
+    {
+      label: "Present",
+      value: presentCount,
+      icon: UserCheck,
+      tone: "success",
+      delta: "",
+      up: true,
+    },
+    {
+      label: "Absent",
+      value: absentCount,
+      icon: UserX,
+      tone: "danger",
+      delta: "",
+      up: false,
+    },
+    {
+      label: "Avg Attendance",
+      value: `${overallAttendance}%`,
+      icon: TrendingUp,
+      tone: "info",
+      delta: "",
+      up: true,
+    },
+  ] as const;
 
   return (
     <div>
       <PageHeading
         icon={LayoutDashboard}
         title="Faculty Dashboard"
-        subtitle="Live attendance overview and reporting analytics"
+        subtitle={`Live attendance analytics for ${department} · ${subject}`}
         actions={
           <Button variant="outline" size="sm">
             <Download className="mr-1.5 h-4 w-4" /> Export
@@ -79,7 +116,12 @@ function Dashboard() {
             <Card key={k.label} className="overflow-hidden">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between">
-                  <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", toneBg[k.tone])}>
+                  <div
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-lg",
+                      toneBg[k.tone],
+                    )}
+                  >
                     <Icon className="h-5 w-5" />
                   </div>
                   <span
@@ -88,7 +130,11 @@ function Dashboard() {
                       k.up ? "text-success" : "text-danger",
                     )}
                   >
-                    {k.up ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
+                    {k.up ? (
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    ) : (
+                      <ArrowDownRight className="h-3.5 w-3.5" />
+                    )}
                     {k.delta}
                   </span>
                 </div>
@@ -112,15 +158,44 @@ function Dashboard() {
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={SUBJECT_DISTRIBUTION} barGap={4}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0.012 256)" vertical={false} />
-                  <XAxis dataKey="subject" tickLine={false} axisLine={false} fontSize={12} stroke="oklch(0.52 0.03 257)" />
-                  <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="oklch(0.52 0.03 257)" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="oklch(0.92 0.012 256)"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="subject"
+                    tickLine={false}
+                    axisLine={false}
+                    fontSize={12}
+                    stroke="oklch(0.52 0.03 257)"
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    fontSize={12}
+                    stroke="oklch(0.52 0.03 257)"
+                  />
                   <Tooltip
                     cursor={{ fill: "oklch(0.965 0.008 264)" }}
-                    contentStyle={{ borderRadius: 12, border: "1px solid oklch(0.92 0.012 256)", fontSize: 12 }}
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "1px solid oklch(0.92 0.012 256)",
+                      fontSize: 12,
+                    }}
                   />
-                  <Bar dataKey="present" name="Present" fill="oklch(0.51 0.21 277)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="absent" name="Absent" fill="oklch(0.85 0.05 18)" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="present"
+                    name="Present"
+                    fill="oklch(0.51 0.21 277)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="absent"
+                    name="Absent"
+                    fill="oklch(0.85 0.05 18)"
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -135,10 +210,32 @@ function Dashboard() {
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={MONTHLY_TREND}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0.012 256)" vertical={false} />
-                  <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} stroke="oklch(0.52 0.03 257)" />
-                  <YAxis domain={[60, 100]} tickLine={false} axisLine={false} fontSize={12} stroke="oklch(0.52 0.03 257)" />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid oklch(0.92 0.012 256)", fontSize: 12 }} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="oklch(0.92 0.012 256)"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    fontSize={12}
+                    stroke="oklch(0.52 0.03 257)"
+                  />
+                  <YAxis
+                    domain={[60, 100]}
+                    tickLine={false}
+                    axisLine={false}
+                    fontSize={12}
+                    stroke="oklch(0.52 0.03 257)"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "1px solid oklch(0.92 0.012 256)",
+                      fontSize: 12,
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="attendance"
@@ -188,7 +285,9 @@ function Dashboard() {
                     <td className="px-3 py-3">{s.name}</td>
                     <td className="px-3 py-3 text-muted-foreground">{s.department}</td>
                     <td className="px-3 py-3 text-muted-foreground">{s.section}</td>
-                    <td className="px-3 py-3 text-right font-semibold text-danger">{s.attendance}%</td>
+                    <td className="px-3 py-3 text-right font-semibold text-danger">
+                      {s.attendance}%
+                    </td>
                     <td className="px-3 py-3 text-right">
                       <StatusPill tone="danger">Defaulter</StatusPill>
                     </td>

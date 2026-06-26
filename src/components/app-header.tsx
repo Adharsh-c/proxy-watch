@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Menu, CalendarClock } from "lucide-react";
 
 import { useAuth } from "@/lib/auth";
+import { useDashboardState } from "@/lib/dashboard-state";
 import { DEPARTMENTS, SUBJECTS } from "@/lib/mock-data";
 import { StatusPill } from "@/components/status-pill";
 import {
@@ -14,6 +15,7 @@ import {
 
 export function AppHeader({ onMenu }: { onMenu: () => void }) {
   const { user } = useAuth();
+  const { department, subject, setDepartment, setSubject } = useDashboardState();
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export function AppHeader({ onMenu }: { onMenu: () => void }) {
 
         <div className="ml-auto flex items-center gap-2">
           <div className="hidden sm:block">
-            <Select defaultValue={DEPARTMENTS[0]}>
+            <Select value={department} onValueChange={setDepartment}>
               <SelectTrigger className="h-9 w-[170px] text-xs">
                 <SelectValue />
               </SelectTrigger>
@@ -65,7 +67,7 @@ export function AppHeader({ onMenu }: { onMenu: () => void }) {
             </Select>
           </div>
           <div className="hidden sm:block">
-            <Select defaultValue={SUBJECTS[0]}>
+            <Select value={subject} onValueChange={setSubject}>
               <SelectTrigger className="h-9 w-[160px] text-xs">
                 <SelectValue />
               </SelectTrigger>

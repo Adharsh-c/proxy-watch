@@ -69,7 +69,9 @@ function RecognitionPage() {
             <p className="font-mono text-sm text-muted-foreground">{best.registerNo}</p>
             <div className="mt-4 flex items-center justify-between rounded-lg bg-muted/50 p-3">
               <span className="text-sm text-muted-foreground">Top cosine similarity</span>
-              <span className="font-mono text-lg font-bold text-primary">{best.similarity.toFixed(2)}</span>
+              <span className="font-mono text-lg font-bold text-primary">
+                {best.similarity.toFixed(2)}
+              </span>
             </div>
             <div className="mt-3">
               <StatusPill tone={matched ? "success" : "danger"} dot>
@@ -106,7 +108,8 @@ function RecognitionPage() {
               })}
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              Showing first 96 of 512 dimensions. Brighter cells indicate larger activation magnitude.
+              Showing first 96 of 512 dimensions. Brighter cells indicate larger activation
+              magnitude.
             </p>
           </CardContent>
         </Card>
@@ -120,9 +123,17 @@ function RecognitionPage() {
             <CardContent>
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Range 0.60 – 0.75</span>
-                <span className="font-mono text-lg font-bold text-primary">{threshold.toFixed(2)}</span>
+                <span className="font-mono text-lg font-bold text-primary">
+                  {threshold.toFixed(2)}
+                </span>
               </div>
-              <Slider value={[threshold]} min={0.6} max={0.75} step={0.01} onValueChange={([v]) => setThreshold(v)} />
+              <Slider
+                value={[threshold]}
+                min={0.6}
+                max={0.75}
+                step={0.01}
+                onValueChange={([v]) => setThreshold(v)}
+              />
             </CardContent>
           </Card>
 
@@ -146,7 +157,12 @@ function RecognitionPage() {
                       <p className="font-mono text-[11px] text-muted-foreground">{c.registerNo}</p>
                     </div>
                     <div className="text-right">
-                      <p className={cn("font-mono text-sm font-semibold", ok ? "text-success" : "text-muted-foreground")}>
+                      <p
+                        className={cn(
+                          "font-mono text-sm font-semibold",
+                          ok ? "text-success" : "text-muted-foreground",
+                        )}
+                      >
                         {c.similarity.toFixed(2)}
                       </p>
                       <p className="text-[10px] text-muted-foreground">{ok ? "match" : "reject"}</p>

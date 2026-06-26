@@ -52,7 +52,11 @@ function InsightsPage() {
           </CardHeader>
           <CardContent>
             <div className="relative overflow-hidden rounded-lg border border-border">
-              <img src={classroom} alt="Grad-CAM input" className="aspect-square w-full object-cover" />
+              <img
+                src={classroom}
+                alt="Grad-CAM input"
+                className="aspect-square w-full object-cover"
+              />
               {heatmap && (
                 <>
                   <div
@@ -70,7 +74,8 @@ function InsightsPage() {
               )}
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              Warm regions show pixels most influential to the recognition decision — concentrated on facial landmarks (eyes, nose, mouth).
+              Warm regions show pixels most influential to the recognition decision — concentrated
+              on facial landmarks (eyes, nose, mouth).
             </p>
           </CardContent>
         </Card>
@@ -83,10 +88,21 @@ function InsightsPage() {
           <CardContent>
             <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={ATTENDANCE_FORECAST} margin={{ top: 8, right: 16, bottom: 0, left: -16 }}>
+                <LineChart
+                  data={ATTENDANCE_FORECAST}
+                  margin={{ top: 8, right: 16, bottom: 0, left: -16 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
-                  <XAxis dataKey="week" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis domain={[60, 100]} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
+                  <XAxis
+                    dataKey="week"
+                    tick={{ fontSize: 12 }}
+                    stroke="hsl(var(--muted-foreground))"
+                  />
+                  <YAxis
+                    domain={[60, 100]}
+                    tick={{ fontSize: 12 }}
+                    stroke="hsl(var(--muted-foreground))"
+                  />
                   <Tooltip
                     contentStyle={{
                       background: "hsl(var(--card))",
@@ -95,15 +111,38 @@ function InsightsPage() {
                       fontSize: 12,
                     }}
                   />
-                  <ReferenceLine y={75} stroke="var(--color-warning, #f59e0b)" strokeDasharray="4 4" label={{ value: "75% floor", fontSize: 10, fill: "#f59e0b" }} />
-                  <Line type="monotone" dataKey="actual" name="Actual" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 3 }} connectNulls />
-                  <Line type="monotone" dataKey="predicted" name="Predicted" stroke="#f59e0b" strokeWidth={2.5} strokeDasharray="6 4" dot={{ r: 3 }} connectNulls />
+                  <ReferenceLine
+                    y={75}
+                    stroke="var(--color-warning, #f59e0b)"
+                    strokeDasharray="4 4"
+                    label={{ value: "75% floor", fontSize: 10, fill: "#f59e0b" }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="actual"
+                    name="Actual"
+                    stroke="var(--primary)"
+                    strokeWidth={2.5}
+                    dot={{ r: 3 }}
+                    connectNulls
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="predicted"
+                    name="Predicted"
+                    stroke="#f59e0b"
+                    strokeWidth={2.5}
+                    strokeDasharray="6 4"
+                    dot={{ r: 3 }}
+                    connectNulls
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
             <div className="mt-2 flex items-center gap-2 text-sm text-warning-foreground">
               <TrendingDown className="h-4 w-4" />
-              Model projects a <span className="font-semibold">~7% decline</span> over the next 3 weeks, breaching the 75% floor.
+              Model projects a <span className="font-semibold">~7% decline</span> over the next 3
+              weeks, breaching the 75% floor.
             </div>
           </CardContent>
         </Card>
@@ -116,7 +155,9 @@ function InsightsPage() {
             <Flame className="h-4 w-4 text-danger" />
             <CardTitle className="text-base">Chronic Absence Risk Prediction</CardTitle>
           </div>
-          <StatusPill tone="danger">{ABSENCE_RISK.filter((r) => r.risk === "high").length} high risk</StatusPill>
+          <StatusPill tone="danger">
+            {ABSENCE_RISK.filter((r) => r.risk === "high").length} high risk
+          </StatusPill>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -136,7 +177,12 @@ function InsightsPage() {
                     <td className="py-2.5 pr-4 font-mono text-xs">{r.registerNo}</td>
                     <td className="py-2.5 pr-4 font-medium">{r.name}</td>
                     <td className="py-2.5 pr-4">{r.current}%</td>
-                    <td className={cn("py-2.5 pr-4 font-semibold", r.predicted < r.current ? "text-danger" : "text-success")}>
+                    <td
+                      className={cn(
+                        "py-2.5 pr-4 font-semibold",
+                        r.predicted < r.current ? "text-danger" : "text-success",
+                      )}
+                    >
                       {r.predicted}%
                     </td>
                     <td className="py-2.5">

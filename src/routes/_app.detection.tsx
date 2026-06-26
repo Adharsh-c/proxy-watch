@@ -35,7 +35,9 @@ function DetectionPage() {
   // Approximate on-screen face pixel height from the box (% of 720px canvas).
   const facePx = (f: DetectedFace) => Math.round((f.box.h / 100) * 720);
 
-  const visible = DETECTED_FACES.filter((f) => adj(f.confidence) >= threshold && facePx(f) >= minFace);
+  const visible = DETECTED_FACES.filter(
+    (f) => adj(f.confidence) >= threshold && facePx(f) >= minFace,
+  );
   const filteredOut = DETECTED_FACES.length - visible.length;
 
   return (
@@ -52,7 +54,9 @@ function DetectionPage() {
                 onClick={() => setModel(m)}
                 className={cn(
                   "rounded-md px-3 py-1.5 text-xs font-semibold transition-colors",
-                  model === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                  model === m
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {m}
@@ -67,7 +71,11 @@ function DetectionPage() {
           <Card className="overflow-hidden">
             <CardContent className="p-0">
               <div className="relative aspect-video w-full bg-slate-900">
-                <img src={classroom} alt="Detection canvas" className="h-full w-full object-cover" />
+                <img
+                  src={classroom}
+                  alt="Detection canvas"
+                  className="h-full w-full object-cover"
+                />
                 <div className="absolute left-3 top-3 flex flex-wrap gap-2">
                   <span className="flex items-center gap-1.5 rounded-md bg-black/60 px-2 py-1 text-[11px] font-medium text-white">
                     <Cpu className="h-3 w-3 text-success" /> {model}
@@ -82,10 +90,15 @@ function DetectionPage() {
                 {visible.map((f) => (
                   <div
                     key={f.faceId}
-                    className="absolute"
-                    style={{ left: `${f.box.x}%`, top: `${f.box.y}%`, width: `${f.box.w}%`, height: `${f.box.h}%` }}
+                    className="absolute detection-face-box"
+                    style={{
+                      left: `${f.box.x}%`,
+                      top: `${f.box.y}%`,
+                      width: `${f.box.w}%`,
+                      height: `${f.box.h}%`,
+                    }}
                   >
-                    <div className="h-full w-full rounded-sm border-2 border-info" style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.4)" }} />
+                    <div className="h-full w-full rounded-sm border-2 border-info detection-face-box-shadow" />
                     <span className="absolute -top-5 left-0 whitespace-nowrap rounded bg-info px-1.5 py-0.5 text-[10px] font-semibold text-white">
                       {trackId(f, model)} · {adj(f.confidence).toFixed(2)}
                     </span>
@@ -103,9 +116,17 @@ function DetectionPage() {
               <CardContent>
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Range 0.50 – 0.70</span>
-                  <span className="font-mono text-lg font-bold text-primary">{threshold.toFixed(2)}</span>
+                  <span className="font-mono text-lg font-bold text-primary">
+                    {threshold.toFixed(2)}
+                  </span>
                 </div>
-                <Slider value={[threshold]} min={0.5} max={0.7} step={0.01} onValueChange={([v]) => setThreshold(v)} />
+                <Slider
+                  value={[threshold]}
+                  min={0.5}
+                  max={0.7}
+                  step={0.01}
+                  onValueChange={([v]) => setThreshold(v)}
+                />
               </CardContent>
             </Card>
             <Card>
@@ -115,9 +136,17 @@ function DetectionPage() {
               <CardContent>
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Filter small faces</span>
-                  <span className="font-mono text-lg font-bold text-primary">{minFace}×{minFace} px</span>
+                  <span className="font-mono text-lg font-bold text-primary">
+                    {minFace}×{minFace} px
+                  </span>
                 </div>
-                <Slider value={[minFace]} min={30} max={120} step={5} onValueChange={([v]) => setMinFace(v)} />
+                <Slider
+                  value={[minFace]}
+                  min={30}
+                  max={120}
+                  step={5}
+                  onValueChange={([v]) => setMinFace(v)}
+                />
               </CardContent>
             </Card>
           </div>
@@ -132,22 +161,30 @@ function DetectionPage() {
             <ScrollArea className="h-[32rem]">
               <div className="space-y-2 pr-3">
                 {visible.length === 0 && (
-                  <p className="py-10 text-center text-sm text-muted-foreground">No faces above current thresholds.</p>
+                  <p className="py-10 text-center text-sm text-muted-foreground">
+                    No faces above current thresholds.
+                  </p>
                 )}
                 {visible.map((f) => (
                   <div key={f.faceId} className="rounded-lg border border-border p-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-semibold text-info">{trackId(f, model)}</span>
+                      <span className="font-mono text-xs font-semibold text-info">
+                        {trackId(f, model)}
+                      </span>
                       <StatusPill tone="primary">{facePx(f)}px</StatusPill>
                     </div>
                     <p className="mt-1.5 text-sm font-medium">{f.name}</p>
                     <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                       <div>
-                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Confidence</p>
+                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          Confidence
+                        </p>
                         <p className="font-semibold">{adj(f.confidence).toFixed(2)}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">BBox px</p>
+                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          BBox px
+                        </p>
                         <p className="font-mono text-[11px]">{f.coords}</p>
                       </div>
                     </div>

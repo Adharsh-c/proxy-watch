@@ -28,19 +28,80 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { label: "Dashboard", to: "/", icon: LayoutDashboard, roles: ["faculty", "admin"], section: "Overview" },
+  {
+    label: "Dashboard",
+    to: "/",
+    icon: LayoutDashboard,
+    roles: ["faculty", "admin"],
+    section: "Overview",
+  },
 
-  { label: "Student Registration", to: "/register", icon: UserPlus, roles: ["faculty", "admin"], section: "Operations" },
-  { label: "Live Detection", to: "/live", icon: ScanFace, roles: ["faculty", "admin"], section: "Operations" },
-  { label: "Proxy Monitor", to: "/proxy", icon: ShieldAlert, roles: ["faculty", "admin"], hint: "2", section: "Operations" },
+  {
+    label: "Student Registration",
+    to: "/register",
+    icon: UserPlus,
+    roles: ["faculty", "admin"],
+    section: "Operations",
+  },
+  {
+    label: "Live Detection",
+    to: "/live",
+    icon: ScanFace,
+    roles: ["faculty", "admin"],
+    section: "Operations",
+  },
+  {
+    label: "Proxy Monitor",
+    to: "/proxy",
+    icon: ShieldAlert,
+    roles: ["faculty", "admin"],
+    hint: "2",
+    section: "Operations",
+  },
 
-  { label: "Preprocessing", to: "/preprocessing", icon: Wand2, roles: ["faculty", "admin"], section: "AI Pipeline" },
-  { label: "Face Detection", to: "/detection", icon: ScanSearch, roles: ["faculty", "admin"], section: "AI Pipeline" },
-  { label: "Recognition", to: "/recognition", icon: Fingerprint, roles: ["faculty", "admin"], section: "AI Pipeline" },
-  { label: "Liveness Engine", to: "/liveness", icon: ShieldCheck, roles: ["faculty", "admin"], section: "AI Pipeline" },
+  {
+    label: "Preprocessing",
+    to: "/preprocessing",
+    icon: Wand2,
+    roles: ["faculty", "admin"],
+    section: "AI Pipeline",
+  },
+  {
+    label: "Face Detection",
+    to: "/detection",
+    icon: ScanSearch,
+    roles: ["faculty", "admin"],
+    section: "AI Pipeline",
+  },
+  {
+    label: "Recognition",
+    to: "/recognition",
+    icon: Fingerprint,
+    roles: ["faculty", "admin"],
+    section: "AI Pipeline",
+  },
+  {
+    label: "Liveness Engine",
+    to: "/liveness",
+    icon: ShieldCheck,
+    roles: ["faculty", "admin"],
+    section: "AI Pipeline",
+  },
 
-  { label: "Reports", to: "/reports", icon: BarChart3, roles: ["faculty", "admin"], section: "Analytics" },
-  { label: "AI Insights", to: "/insights", icon: Sparkles, roles: ["faculty", "admin"], section: "Analytics" },
+  {
+    label: "Reports",
+    to: "/reports",
+    icon: BarChart3,
+    roles: ["faculty", "admin"],
+    section: "Analytics",
+  },
+  {
+    label: "AI Insights",
+    to: "/insights",
+    icon: Sparkles,
+    roles: ["faculty", "admin"],
+    section: "Analytics",
+  },
 
   { label: "Database Admin", to: "/database", icon: Database, roles: ["admin"], section: "Admin" },
 ];

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ScanEye, Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -45,13 +45,7 @@ function AuthPage() {
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Brand panel */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-sidebar p-12 text-white lg:flex">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-30"
-          style={{
-            background:
-              "radial-gradient(600px circle at 20% 10%, oklch(0.58 0.21 277 / 0.5), transparent 45%), radial-gradient(500px circle at 90% 90%, oklch(0.66 0.16 156 / 0.35), transparent 45%)",
-          }}
-        />
+        <div className="pointer-events-none absolute inset-0 opacity-30 auth-auth-hero-bg" />
         <div className="relative flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sidebar-primary shadow-lg">
             <ScanEye className="h-6 w-6" />
@@ -67,8 +61,8 @@ function AuthPage() {
             Smart Attendance & Proxy-Detection System
           </h1>
           <p className="mt-4 text-white/70">
-            Enterprise-grade facial recognition attendance with liveness verification and
-            cross-room proxy intelligence.
+            Enterprise-grade facial recognition attendance with liveness verification and cross-room
+            proxy intelligence.
           </p>
           <ul className="mt-8 space-y-3">
             {FEATURES.map((f) => (
@@ -110,9 +104,7 @@ function AuthPage() {
                 onClick={() => {
                   setRole(r);
                   setEmail(
-                    r === "faculty"
-                      ? "ramesh.kumar@university.edu"
-                      : "anita.sharma@university.edu",
+                    r === "faculty" ? "ramesh.kumar@university.edu" : "anita.sharma@university.edu",
                   );
                 }}
                 className={cn(
@@ -131,6 +123,16 @@ function AuthPage() {
           </div>
 
           <form onSubmit={handleLogin} className="mt-6 space-y-4">
+            <div className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
+              New to SentinelFace?{" "}
+              <Link
+                to="/pricing"
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                View pricing plans
+              </Link>{" "}
+              and start your free trial.
+            </div>
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
               <div className="relative">

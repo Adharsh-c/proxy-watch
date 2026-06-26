@@ -46,7 +46,9 @@ function PreprocessingPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setEnabled({ resize: true, normalize: true, equalize: true, denoise: true })}
+            onClick={() =>
+              setEnabled({ resize: true, normalize: true, equalize: true, denoise: true })
+            }
           >
             <RotateCcw className="mr-1.5 h-4 w-4" /> Reset
           </Button>
@@ -56,7 +58,9 @@ function PreprocessingPage() {
       {/* Pipeline strip */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-base">Pipeline ({activeCount + 1}/{PREPROCESSING_STAGES.length} stages active)</CardTitle>
+          <CardTitle className="text-base">
+            Pipeline ({activeCount + 1}/{PREPROCESSING_STAGES.length} stages active)
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-stretch gap-2">
@@ -68,7 +72,9 @@ function PreprocessingPage() {
                   <div
                     className={cn(
                       "w-44 rounded-xl border p-3 transition-colors",
-                      on ? "border-primary/40 bg-primary/5" : "border-dashed border-border bg-muted/40 opacity-60",
+                      on
+                        ? "border-primary/40 bg-primary/5"
+                        : "border-dashed border-border bg-muted/40 opacity-60",
                     )}
                   >
                     <div className="flex items-center justify-between">
@@ -100,17 +106,29 @@ function PreprocessingPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <figure>
                 <div className="overflow-hidden rounded-lg border border-border">
-                  <img src={classroom} alt="Raw input frame" className="aspect-square w-full object-cover" />
+                  <img
+                    src={classroom}
+                    alt="Raw input frame"
+                    className="aspect-square w-full object-cover"
+                  />
                 </div>
-                <figcaption className="mt-2 text-center text-xs text-muted-foreground">Raw input · 1920 × 1080 × 3</figcaption>
+                <figcaption className="mt-2 text-center text-xs text-muted-foreground">
+                  Raw input · 1920 × 1080 × 3
+                </figcaption>
               </figure>
               <figure>
                 <div className="overflow-hidden rounded-lg border border-primary/40">
                   <img
                     src={classroom}
                     alt="Processed input tensor preview"
-                    className={cn("aspect-square w-full object-cover transition-all", enabled.equalize && "saturate-150")}
-                    style={{ filter: filterStyle, imageRendering: enabled.resize ? "pixelated" : "auto" }}
+                    className={cn(
+                      "aspect-square w-full object-cover transition-all",
+                      enabled.equalize && "saturate-150",
+                    )}
+                    style={{
+                      filter: filterStyle,
+                      imageRendering: enabled.resize ? "pixelated" : "auto",
+                    }}
                   />
                 </div>
                 <figcaption className="mt-2 text-center text-xs text-primary">
@@ -127,7 +145,10 @@ function PreprocessingPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {PREPROCESSING_STAGES.filter((s) => TOGGLEABLE.includes(s.key)).map((stage) => (
-              <div key={stage.key} className="flex items-center justify-between rounded-lg border border-border px-3 py-2.5">
+              <div
+                key={stage.key}
+                className="flex items-center justify-between rounded-lg border border-border px-3 py-2.5"
+              >
                 <div className="min-w-0 pr-3">
                   <p className="text-sm font-medium">{stage.label}</p>
                   <p className="truncate text-xs text-muted-foreground">{stage.detail}</p>
@@ -139,7 +160,9 @@ function PreprocessingPage() {
               </div>
             ))}
             <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-              Output feeds <span className="font-medium text-foreground">FaceNet (InceptionResNetV1)</span> for 512-D embedding extraction.
+              Output feeds{" "}
+              <span className="font-medium text-foreground">FaceNet (InceptionResNetV1)</span> for
+              512-D embedding extraction.
             </div>
           </CardContent>
         </Card>

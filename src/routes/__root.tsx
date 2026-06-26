@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth";
+import { DashboardStateProvider } from "../lib/dashboard-state";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -94,11 +95,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "SentinelFace — Smart Attendance & Proxy Detection" },
-      { name: "description", content: "Smart Attendance & Proxy-Detection System for automated, secure student attendance tracking." },
-      { property: "og:description", content: "Smart Attendance & Proxy-Detection System for automated, secure student attendance tracking." },
-      { name: "twitter:description", content: "Smart Attendance & Proxy-Detection System for automated, secure student attendance tracking." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fcd2f658-6da6-4da8-9de8-5217565ff641/id-preview-01299c47--2ad6dee3-0a83-48c5-97cb-9b6ae55d8f73.lovable.app-1782385490345.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fcd2f658-6da6-4da8-9de8-5217565ff641/id-preview-01299c47--2ad6dee3-0a83-48c5-97cb-9b6ae55d8f73.lovable.app-1782385490345.png" },
+      {
+        name: "description",
+        content:
+          "Smart Attendance & Proxy-Detection System for automated, secure student attendance tracking.",
+      },
+      {
+        property: "og:description",
+        content:
+          "Smart Attendance & Proxy-Detection System for automated, secure student attendance tracking.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Smart Attendance & Proxy-Detection System for automated, secure student attendance tracking.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fcd2f658-6da6-4da8-9de8-5217565ff641/id-preview-01299c47--2ad6dee3-0a83-48c5-97cb-9b6ae55d8f73.lovable.app-1782385490345.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fcd2f658-6da6-4da8-9de8-5217565ff641/id-preview-01299c47--2ad6dee3-0a83-48c5-97cb-9b6ae55d8f73.lovable.app-1782385490345.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -136,9 +157,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <Toaster position="top-right" richColors closeButton />
+        <DashboardStateProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <Toaster position="top-right" richColors closeButton />
+        </DashboardStateProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

@@ -17,10 +17,35 @@ export const Route = createFileRoute("/_app/liveness")({
 
 type Scenario = "live" | "print" | "phone";
 
-const SCENARIOS: { key: Scenario; label: string; icon: typeof User; profile: Record<string, [number, number]> }[] = [
-  { key: "live", label: "Live Person", icon: User, profile: { blink: [0.82, 0.95], texture: [0.8, 0.94], depth: [0.78, 0.9], motion: [0.75, 0.92] } },
-  { key: "print", label: "Printed Photo", icon: Printer, profile: { blink: [0.05, 0.2], texture: [0.1, 0.3], depth: [0.15, 0.35], motion: [0.05, 0.18] } },
-  { key: "phone", label: "Phone Replay", icon: Smartphone, profile: { blink: [0.4, 0.6], texture: [0.2, 0.4], depth: [0.25, 0.45], motion: [0.45, 0.65] } },
+const SCENARIOS: {
+  key: Scenario;
+  label: string;
+  icon: typeof User;
+  profile: Record<string, [number, number]>;
+}[] = [
+  {
+    key: "live",
+    label: "Live Person",
+    icon: User,
+    profile: {
+      blink: [0.82, 0.95],
+      texture: [0.8, 0.94],
+      depth: [0.78, 0.9],
+      motion: [0.75, 0.92],
+    },
+  },
+  {
+    key: "print",
+    label: "Printed Photo",
+    icon: Printer,
+    profile: { blink: [0.05, 0.2], texture: [0.1, 0.3], depth: [0.15, 0.35], motion: [0.05, 0.18] },
+  },
+  {
+    key: "phone",
+    label: "Phone Replay",
+    icon: Smartphone,
+    profile: { blink: [0.4, 0.6], texture: [0.2, 0.4], depth: [0.25, 0.45], motion: [0.45, 0.65] },
+  },
 ];
 
 const THRESHOLD = 0.7;
@@ -67,7 +92,9 @@ function LivenessPage() {
               onClick={() => setScenario(s.key)}
               className={cn(
                 "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-                scenario === s.key ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:text-foreground",
+                scenario === s.key
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
               <Icon className="h-4 w-4" /> {s.label}
@@ -120,14 +147,21 @@ function LivenessPage() {
                   <div className="mb-1.5 flex items-center justify-between">
                     <div>
                       <span className="text-sm font-medium">{c.label}</span>
-                      <span className="ml-2 text-xs text-muted-foreground">weight {c.weight.toFixed(2)}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        weight {c.weight.toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm font-semibold">{c.score.toFixed(2)}</span>
-                      <StatusPill tone={pass ? "success" : "danger"}>{pass ? "pass" : "fail"}</StatusPill>
+                      <StatusPill tone={pass ? "success" : "danger"}>
+                        {pass ? "pass" : "fail"}
+                      </StatusPill>
                     </div>
                   </div>
-                  <Progress value={c.score * 100} className={cn("h-2", !pass && "[&>div]:bg-danger")} />
+                  <Progress
+                    value={c.score * 100}
+                    className={cn("h-2", !pass && "[&>div]:bg-danger")}
+                  />
                   <p className="mt-1 text-xs text-muted-foreground">{c.description}</p>
                 </div>
               );

@@ -1,14 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import {
-  UserPlus,
-  Camera,
-  ScanFace,
-  CheckCircle2,
-  RotateCcw,
-  Save,
-  Sparkles,
-} from "lucide-react";
+import { UserPlus, Camera, ScanFace, CheckCircle2, RotateCcw, Save, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeading } from "@/components/page-heading";
@@ -25,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DEPARTMENTS, YEARS, SECTIONS } from "@/lib/mock-data";
+import { useDashboardState } from "@/lib/dashboard-state";
+import { DEPARTMENTS, YEARS, SECTIONS, SUBJECTS } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/register")({
@@ -42,58 +35,170 @@ const PREPROCESS = [
 ];
 
 function RegisterPage() {
-  const [captured, setCaptured] = useState(0);
+  const { addStudent } = useDashboardState();
   const [cameraOn, setCameraOn] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
   const [capturing, setCapturing] = useState(false);
   const [pre, setPre] = useState<Record<string, boolean>>({
     resize: true,
     normalize: true,
     histogram: false,
   });
+  const [department, setDepartment] = useState(DEPARTMENTS[0]);
+  const [subject, setSubject] = useState(SUBJECTS[0]);
+  const [year, setYear] = useState(YEARS[0]);
+  const [section, setSection] = useState(SECTIONS[0]);
+  const [name, setName] = useState("");
+  const [registerNo, setRegisterNo] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [dob, setDob] = useState("");
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [capturedFrames, setCapturedFrames] = useState<string[]>([]);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => () => void (timerRef.current && clearInterval(timerRef.current)), []);
+  useEffect(() => {
+    if (stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.play().catch(() => undefined);
+    }
 
-  const startCamera = () => {
-    setCameraOn(true);
-    toast.info("Camera initialized", { description: "Live feed active — position the face in frame" });
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [stream]);
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setStream(mediaStream);
+      setCameraOn(true);
+      setCameraReady(false);
+      toast.success("Camera initialized", {
+        description: "Live feed active — position the face in frame.",
+      });
+    } catch (error) {
+      toast.error("Unable to access camera", {
+        description: "Please allow camera access or use a supported device.",
+      });
+    }
+  };
+
+  const captureFrame = () => {
+    const video = videoRef.current;
+    if (!video || !stream) {
+      toast.error("Camera not ready", {
+        description: "Start the camera before capturing images.",
+      });
+      return;
+    }
+
+    if (!video.videoWidth || !video.videoHeight) {
+      toast.error("Camera feed not ready", {
+        description: "Wait for the live preview before capturing images.",
+      });
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+    setCapturedFrames((current) => {
+      const next = [...current, dataUrl].slice(0, TARGET);
+      if (next.length >= TARGET) {
+        setCapturing(false);
+        if (timerRef.current) clearInterval(timerRef.current);
+        toast.success("Dataset complete", {
+          description: `${TARGET}/${TARGET} face images captured`,
+        });
+      }
+      return next;
+    });
   };
 
   const autoCapture = () => {
-    if (!cameraOn) {
-      toast.error("Start the camera first");
+    if (!cameraOn || !stream || !cameraReady) {
+      toast.error("Start the camera first", {
+        description: cameraReady
+          ? "Camera is still initializing. Wait for the preview to appear."
+          : "Please allow camera access and wait for the live preview.",
+      });
       return;
     }
-    if (capturing) return;
+    if (capturing || capturedFrames.length >= TARGET) return;
     setCapturing(true);
     timerRef.current = setInterval(() => {
-      setCaptured((c) => {
-        if (c >= TARGET) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          setCapturing(false);
-          toast.success("Dataset complete", { description: `${TARGET}/${TARGET} face images captured` });
-          return TARGET;
-        }
-        return c + 1;
-      });
+      if (capturedFrames.length >= TARGET) {
+        if (timerRef.current) clearInterval(timerRef.current);
+        setCapturing(false);
+        return;
+      }
+      captureFrame();
     }, 450);
   };
 
   const reset = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     setCapturing(false);
-    setCaptured(0);
+    setCapturedFrames([]);
+    setCameraReady(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (captured < TARGET) {
-      toast.warning("Capture more images", {
-        description: `${captured}/${TARGET} captured. Aim for 10 for best accuracy.`,
+    if (!registerNo.trim() || !name.trim()) {
+      toast.warning("Complete student details", {
+        description: "Register number and full name are required.",
       });
       return;
     }
-    toast.success("Student registered", { description: "Profile and embeddings saved to dataset" });
+
+    if (capturedFrames.length < TARGET) {
+      toast.warning("Capture more images", {
+        description: `${capturedFrames.length}/${TARGET} captured. Aim for 10 for best accuracy.`,
+      });
+      return;
+    }
+
+    addStudent({
+      registerNo,
+      name,
+      department,
+      section,
+      subject,
+      attendance: 100,
+      status: "Active",
+      year,
+      email,
+      phone,
+      dob,
+      capturedImages: capturedFrames,
+    });
+
+    toast.success("Student registered", {
+      description: "Profile and embeddings saved and student roster updated.",
+    });
+
+    setRegisterNo("");
+    setName("");
+    setEmail("");
+    setPhone("");
+    setDob("");
+    setCapturedFrames([]);
+    setCameraOn(false);
+    setCapturing(false);
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
+    }
   };
 
   return (
@@ -112,15 +217,49 @@ function RegisterPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
-              <Field label="Register Number" placeholder="21CS011" required />
-              <Field label="Full Name" placeholder="Ravi Teja" required />
+              <Field
+                label="Register Number"
+                placeholder="21CS011"
+                required
+                value={registerNo}
+                onChange={(event) => setRegisterNo(event.currentTarget.value)}
+              />
+              <Field
+                label="Full Name"
+                placeholder="Ravi Teja"
+                required
+                value={name}
+                onChange={(event) => setName(event.currentTarget.value)}
+              />
 
               <div className="space-y-1.5">
                 <Label>Department</Label>
-                <Select>
-                  <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
+                <Select value={department} onValueChange={setDepartment}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                    {DEPARTMENTS.map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Subject</Label>
+                <Select value={subject} onValueChange={setSubject}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SUBJECTS.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -128,31 +267,62 @@ function RegisterPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Year / Batch</Label>
-                  <Select>
-                    <SelectTrigger><SelectValue placeholder="Year" /></SelectTrigger>
+                  <Select value={year} onValueChange={setYear}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {YEARS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                      {YEARS.map((y) => (
+                        <SelectItem key={y} value={y}>
+                          {y}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Section</Label>
-                  <Select>
-                    <SelectTrigger><SelectValue placeholder="Sec" /></SelectTrigger>
+                  <Select value={section} onValueChange={setSection}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {SECTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                      {SECTIONS.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <Field label="Email" type="email" placeholder="ravi.t@uni.edu" required />
-              <Field label="Mobile" type="tel" placeholder="+91 98765 43210" required />
-              <Field label="Date of Birth" type="date" />
+              <Field
+                label="Email"
+                type="email"
+                placeholder="ravi.t@uni.edu"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.currentTarget.value)}
+              />
+              <Field
+                label="Mobile"
+                type="tel"
+                placeholder="+91 98765 43210"
+                required
+                value={phone}
+                onChange={(event) => setPhone(event.currentTarget.value)}
+              />
+              <Field
+                label="Date of Birth"
+                type="date"
+                value={dob}
+                onChange={(event) => setDob(event.currentTarget.value)}
+              />
 
               <div className="flex items-end">
-                <StatusPill tone={captured >= TARGET ? "success" : "warning"} dot className="mb-2">
-                  Dataset {captured}/{TARGET}
+                <StatusPill tone={capturedFrames.length >= TARGET ? "success" : "warning"} dot className="mb-2">
+                  Dataset {capturedFrames.length}/{TARGET}
                 </StatusPill>
               </div>
 
@@ -180,14 +350,19 @@ function RegisterPage() {
             <CardContent className="space-y-4">
               {/* Camera viewport */}
               <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-slate-900">
-                {cameraOn ? (
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "radial-gradient(circle at 50% 40%, oklch(0.35 0.04 265), oklch(0.18 0.03 265))",
-                    }}
+                {cameraOn && stream ? (
+                  <video
+                    ref={videoRef}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    muted
+                    playsInline
+                    autoPlay
+                    onCanPlay={() => setCameraReady(true)}
                   />
+                ) : cameraOn ? (
+                  <div className="absolute inset-0 flex items-center justify-center text-slate-400">
+                    <p className="text-xs">Initializing camera...</p>
+                  </div>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-500">
                     <Camera className="h-8 w-8" />
@@ -223,9 +398,13 @@ function RegisterPage() {
                     <Camera className="mr-1.5 h-4 w-4" /> Start Camera
                   </Button>
                 ) : (
-                  <Button onClick={autoCapture} className="flex-1" disabled={capturing || captured >= TARGET}>
+                  <Button
+                    onClick={autoCapture}
+                    className="flex-1"
+                    disabled={capturing || capturedFrames.length >= TARGET}
+                  >
                     <Sparkles className="mr-1.5 h-4 w-4" />
-                    {captured >= TARGET ? "Complete" : capturing ? "Capturing…" : "Auto Capture"}
+                    {capturedFrames.length >= TARGET ? "Complete" : capturing ? "Capturing…" : "Auto Capture"}
                   </Button>
                 )}
                 <Button variant="outline" onClick={reset}>
@@ -237,20 +416,30 @@ function RegisterPage() {
               <div>
                 <div className="mb-2 flex items-center justify-between text-sm">
                   <span className="font-medium">Captured Images</span>
-                  <span className="text-muted-foreground">{captured}/{TARGET}</span>
+                  <span className="text-muted-foreground">
+                    {capturedFrames.length}/{TARGET}
+                  </span>
                 </div>
                 <div className="grid grid-cols-5 gap-2">
                   {Array.from({ length: TARGET }).map((_, i) => (
                     <div
                       key={i}
                       className={cn(
-                        "relative flex aspect-square items-center justify-center rounded-md border text-xs",
-                        i < captured
+                        "relative flex aspect-square items-center justify-center overflow-hidden rounded-md border text-xs",
+                        i < capturedFrames.length
                           ? "border-success/40 bg-success/10 text-success"
                           : "border-dashed border-border bg-muted/40 text-muted-foreground",
                       )}
                     >
-                      {i < captured ? <CheckCircle2 className="h-5 w-5" /> : i + 1}
+                      {i < capturedFrames.length ? (
+                        <img
+                          src={capturedFrames[i]}
+                          alt={`capture-${i + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span>{i + 1}</span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -264,7 +453,10 @@ function RegisterPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {PREPROCESS.map((p) => (
-                <div key={p.key} className="flex items-center justify-between rounded-lg border border-border p-3">
+                <div
+                  key={p.key}
+                  className="flex items-center justify-between rounded-lg border border-border p-3"
+                >
                   <div>
                     <p className="text-sm font-medium">{p.label}</p>
                     <p className="text-xs text-muted-foreground">{p.desc}</p>
@@ -288,16 +480,26 @@ function Field({
   type = "text",
   placeholder,
   required,
+  value,
+  onChange,
 }: {
   label: string;
   type?: string;
   placeholder?: string;
   required?: boolean;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
     <div className="space-y-1.5">
       <Label>{label}</Label>
-      <Input type={type} placeholder={placeholder} required={required} />
+      <Input
+        type={type}
+        placeholder={placeholder}
+        required={required}
+        value={value}
+        onChange={onChange}
+      />
     </div>
   );
 }

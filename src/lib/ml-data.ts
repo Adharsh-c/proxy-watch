@@ -10,11 +10,36 @@ export interface PreprocStage {
 }
 
 export const PREPROCESSING_STAGES: PreprocStage[] = [
-  { key: "raw", label: "Raw Capture", detail: "Original RGB frame from camera sensor", shape: "1920 × 1080 × 3" },
-  { key: "resize", label: "Resize", detail: "Bilinear downscale to network input size", shape: "160 × 160 × 3" },
-  { key: "normalize", label: "Min-Max Normalization", detail: "Pixel intensities scaled to [0, 1]", shape: "160 × 160 × 3" },
-  { key: "equalize", label: "Histogram Equalization", detail: "Adaptive contrast (CLAHE) on luminance", shape: "160 × 160 × 3" },
-  { key: "denoise", label: "Noise Removal", detail: "Non-local means denoising filter", shape: "160 × 160 × 3" },
+  {
+    key: "raw",
+    label: "Raw Capture",
+    detail: "Original RGB frame from camera sensor",
+    shape: "1920 × 1080 × 3",
+  },
+  {
+    key: "resize",
+    label: "Resize",
+    detail: "Bilinear downscale to network input size",
+    shape: "160 × 160 × 3",
+  },
+  {
+    key: "normalize",
+    label: "Min-Max Normalization",
+    detail: "Pixel intensities scaled to [0, 1]",
+    shape: "160 × 160 × 3",
+  },
+  {
+    key: "equalize",
+    label: "Histogram Equalization",
+    detail: "Adaptive contrast (CLAHE) on luminance",
+    shape: "160 × 160 × 3",
+  },
+  {
+    key: "denoise",
+    label: "Noise Removal",
+    detail: "Non-local means denoising filter",
+    shape: "160 × 160 × 3",
+  },
 ];
 
 // Deterministic pseudo-random 512-D embedding for display.
@@ -24,7 +49,7 @@ export function buildEmbedding(seed = 42, size = 512): number[] {
   for (let i = 0; i < size; i++) {
     s = (s * 1103515245 + 12345) & 0x7fffffff;
     // Center around 0 in the range roughly [-0.18, 0.18]
-    out.push(Number((((s / 0x7fffffff) - 0.5) * 0.36).toFixed(4)));
+    out.push(Number(((s / 0x7fffffff - 0.5) * 0.36).toFixed(4)));
   }
   return out;
 }
@@ -52,10 +77,30 @@ export interface LivenessComponent {
 }
 
 export const LIVENESS_COMPONENTS: LivenessComponent[] = [
-  { key: "blink", label: "Blink Detection", weight: 0.3, description: "Eye-aspect-ratio temporal pattern" },
-  { key: "texture", label: "Texture Analysis", weight: 0.3, description: "LBP micro-texture vs print/screen" },
-  { key: "depth", label: "Depth Sensing", weight: 0.25, description: "Monocular depth surface estimate" },
-  { key: "motion", label: "Micro-Motion", weight: 0.15, description: "Involuntary head/face motion flow" },
+  {
+    key: "blink",
+    label: "Blink Detection",
+    weight: 0.3,
+    description: "Eye-aspect-ratio temporal pattern",
+  },
+  {
+    key: "texture",
+    label: "Texture Analysis",
+    weight: 0.3,
+    description: "LBP micro-texture vs print/screen",
+  },
+  {
+    key: "depth",
+    label: "Depth Sensing",
+    weight: 0.25,
+    description: "Monocular depth surface estimate",
+  },
+  {
+    key: "motion",
+    label: "Micro-Motion",
+    weight: 0.15,
+    description: "Involuntary head/face motion flow",
+  },
 ];
 
 export interface RiskStudent {
